@@ -124,3 +124,42 @@ def query_product(question: str, product_id: Optional[str] = None):
   chain = prompt | llm | StrOutputParser()
   
   return chain.invoke({"context": context, "question": question})
+
+
+def query_product_with_sources(question: str, vectorstore: Chroma = None, k: int = 5, product_id: Optional[str] = None) -> Dict[str, Any]:
+  if vectorstore is None:
+    vectorstore = load_vector_store()
+
+  filter_dict = None
+  if product_id:
+    filter_dict = {"product_id": product_id}
+
+  results = search_store(vectorstore, question, k=k, filter_dict=filter_dict)
+
+  if not results:
+    return {"answer": "No reviews found for this product.", "sources": []}
+
+  docs = [doc for doc, score in results]
+  scores = [score for doc, score in results]
+  context = format_docs(docs)
+
+  llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
+  prompt = ChatPromptTemplate.from_template(RAG_PROMPT_TEMPLATE)
+
+  chain = prompt | llm | StrOutputParser()
+
+  answer = chain.invoke({"context": context, "question": question})
+
+  sources = []
+  for doc, score in zip(docs, scores):
+    rating = doc.metadata.get('rating', 'N/A')
+    sentiment = "Positive" if rating >= 4 else "Negative" if rating <= 2 else "Neutral"
+    sources.append({
+      'text': doc.page_content,
+      'rating': rating,
+      'sentiment': sentiment,
+      'product_id': doc.metadata.get('product_id'),
+      'similarity_score': 1 - score
+    })
+
+  return {"answer": answer, "sources": sources}
