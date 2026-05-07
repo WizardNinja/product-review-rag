@@ -57,7 +57,7 @@ df = load_reviews(
 ```python
 from product_rag_system import load_reviews, create_documents, create_vector_store
 
-df = load_reviews('reviews_subset.csv')
+df = load_reviews('example_reviews.csv')
 documents = create_documents(df)
 vectorstore = create_vector_store(documents)
 ```
