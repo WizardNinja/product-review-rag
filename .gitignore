@@ -2,5 +2,6 @@
 chroma_db/
 venv/
 __pycache__/
+.ipynb_checkpoints/
 Reviews.csv
 .DS_Store
