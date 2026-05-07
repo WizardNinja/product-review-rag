@@ -202,7 +202,7 @@ if st.session_state.vectorstore is not None:
         st.header("Source Reviews")
         for i, source in enumerate(result['sources'], 1):
             # Build expander label with product info if available
-            label = f"Review {i} - Rating: {source['rating']}/5 | Sentiment: {source['sentiment']}"
+            label = f"Review {i} - Rating: {source['rating']}/5"
             if source.get('product_id'):
                 label += f" | Product: {source['product_id']}"
             label += f" | Similarity: {source['similarity_score']:.2%}"
@@ -213,5 +213,5 @@ if st.session_state.vectorstore is not None:
 # Footer
 st.markdown("---")
 st.markdown(
-    "Built using LangChain, ChromaDB, and OpenAI | "
+    "Built using LangChain, ChromaDB, and OpenAI"
 )

@@ -153,13 +153,11 @@ def query_product_with_sources(question: str, vectorstore: Chroma = None, k: int
   sources = []
   for doc, score in zip(docs, scores):
     rating = doc.metadata.get('rating', 'N/A')
-    sentiment = "Positive" if rating >= 4 else "Negative" if rating <= 2 else "Neutral"
     sources.append({
       'text': doc.page_content,
       'rating': rating,
-      'sentiment': sentiment,
       'product_id': doc.metadata.get('product_id'),
-      'similarity_score': 1 - score
+      'similarity_score': score
     })
 
   return {"answer": answer, "sources": sources}
